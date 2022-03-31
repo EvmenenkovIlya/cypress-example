@@ -17,3 +17,17 @@ jobs:
         with:
           # Specify Browser since container image is compile with Firefox
           browser: chrome
+          
+name: Firefox
+on: push
+jobs:
+  firefox:
+    runs-on: ubuntu-latest
+    container:
+      image: cypress/browsers:node12.16.1-chrome80-ff73
+      options: --user 1001
+    steps:
+      - uses: actions/checkout@v2
+      - uses: cypress-io/github-action@v2
+        with:
+          browser: firefox          
