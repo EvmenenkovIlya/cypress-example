@@ -3,6 +3,14 @@ describe( "Log in", ()=> {
     cy.visit("http://demo.guru99.com/Agile_Project/Agi_V1/")
     });
 
+    it("Chek page view", function() {
+        cy.get('*form[name="frmLogin"]').should('be.visible');
+        cy.get('input[name="uid"]').should('be.visible').and('have.attr', 'maxlength','10');
+        cy.get('input[name="password"]').should('be.visible');
+        cy.get('input[name="btnLogin"]').scrollIntoView().should('be.visible');
+        cy.get('input[name="btnReset"]').scrollIntoView().should('be.visible'); 
+    });
+
     it("ResetBotton",  function() {   
         cy.fillLoginAndPassword(validLoginAndPassword)    
         cy.get('input[type = "reset"]').click()    
@@ -17,6 +25,8 @@ describe( "Log in", ()=> {
         cy.url().should('include', '/customer/Customerhomepage')
         cy.title().should('eq', 'Guru99 Bank Customer HomePage')
     });
+
+    // incorrect alert behaviour which blocked next tests
 
     /*it("InvalidPassword",  function() {
         cy.fillLoginAndPassword('1303', 'Guru999')    

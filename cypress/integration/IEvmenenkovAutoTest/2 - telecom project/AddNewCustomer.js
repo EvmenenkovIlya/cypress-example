@@ -3,12 +3,20 @@ describe( "AddNewCustomer", ()=> {
     cy.visit("https://demo.guru99.com/telecom/addcustomer.php")  
     });
 
+    it("Chek page view", function() {        
+        cy.get('a.logo').contains('a','Guru99 telecom').should('be.visible')
+        cy.get('.inner').contains('Add Customer').should('be.visible')    
+        cy.get('input[type="submit"]').should('be.visible');
+        cy.get('input[type="Reset"]').should('be.visible');
+        
+    });
+
     it("ResetBotton",  function() {       
         cy.on('uncaught:exception', (err, runnable) => {
             return false
           })
         cy.get('label[for="done"]').click()
-        cy.FillWithDataNewCustomer("test", "test", "Test@test.com", "Test", 12345)
+        cy.FillWithDataNewCustomer(UserDataTest)
         cy.get('input[type = "reset"]').click()  
         cy.CheckTextboxesAreEmpty()   
     });
@@ -18,26 +26,41 @@ describe( "AddNewCustomer", ()=> {
             return false
           })
         cy.get('label[for="done"]').click()
-        cy.FillWithDataNewCustomer('Bob', 'Robert', 'Bob.Robert@gmail.com', 'The Uniated States', '89558987745')
+        cy.FillWithDataNewCustomer(userDataValid)
         cy.get('input[type = "submit"]').click()     
         cy.url().should('contain', 'https://demo.guru99.com/telecom/access.php?uid=')        
-        // Check that
     });
-    it("ValidData",  function() {      
+
+    it("EmptyData",  function() {      
         cy.on('uncaught:exception', (err, runnable) => {
             return false
           })
         cy.get('label[for="done"]').click()
-        cy.FillWithDataNewCustomer('Bob', 'Robert', 'Bob.Robert@gmail.com', 'The Uniated States', '89558987745')
-        cy.get('input[type = "submit"]').click()             
-        // Check that
+        cy.get('input[type = "submit"]').click()    
+        cy.on('window:alert', (text) => {
+            expect(text).to.eq('please fill all fields');
+        });
+        cy.on('window:confirm', () => true);
+        cy.get('table').should('not.exist');
+        cy.url().should('eq', 'https://demo.guru99.com/telecom/addcustomer.php');        
     });
 
+    it("InvalidData", function () {
+        cy.on('uncaught:exception', (err, runnable) => {
+            return false
+          })
+        cy.get('label[for="done"]').click()
+        cy.FillWithDataNewCustomer(userDataInValid)
+        cy.get('input[type = "submit"]').click()  
+        cy.on('window:alert', (text) => {
+            expect(text).to.eq('please fill all fields');
+        });
+        cy.on('window:confirm', () => true);
+        cy.get('table').should('not.exist');
+    });
+});
 
-
-})
-
-Cypress.Commands.add("FillWithDataNewCustomer", (firstName, lastName, email, addres, phone ) => {
+Cypress.Commands.add("FillWithDataNewCustomer", ({firstName, lastName, email, addres, phone} ) => {
     cy.get('input[name = "fname"]').type(firstName)
     cy.get('input[name = "lname"]').type(lastName)
     cy.get('input[name = "emailid"]').type(email)
@@ -60,13 +83,6 @@ const UserDataTest = {
     addres: 'test',
     phone: '89598586677'
 }
-const userDataEmpty = {
-    firstName: '',
-    lastName: '',
-    email: '',
-    addres: '',
-    phone: ''
-}
 
 const userDataValid = {
     firstName: 'Bob',
@@ -75,10 +91,10 @@ const userDataValid = {
     addres: 'The Uniated States',
     phone: '89558987745'
 }
-const specialChars = {
-    firstName: 'test',
-    lastName: 'test',
-    email: 'Test@test.com',
-    addres: 'test',
-    phone: '89598586677'
+const userDataInValid = {
+    firstName: '1test',
+    lastName: '1test',
+    email: 'Testtestcom',
+    addres: 'test*(&^',
+    phone: '895985nmk677'
 }
